@@ -5,19 +5,12 @@ import seaborn as sns
 import plotly.express as px
 import os
 
-# Создаем папку для графиков, если её нет
 os.makedirs('images', exist_ok=True)
 
-# Настройка стиля: пастельные цвета, поддержка русского языка
 sns.set_theme(style="whitegrid", palette="muted")
 plt.rcParams['font.family'] = 'DejaVu Sans'
 plt.rcParams['axes.unicode_minus'] = False
 
-# === ЗАГРУЗКА ДАННЫХ ===
-# Если у вас есть CSV файл с Kaggle, раскомментируйте строку ниже:
-# df = pd.read_csv('data/synthetic_clinical_data.csv')
-
-# Если файла нет, генерируем синтетические данные для теста (как в документе):
 np.random.seed(42)
 n = 1000
 data = {
@@ -34,18 +27,15 @@ data = {
 }
 df = pd.DataFrame(data)
 
-# Добавляем пропуски (как в документе: bmi ~2.3%, cholesterol ~4.1%, glucose ~3.5%)
 df.loc[df.sample(frac=0.023).index, 'bmi'] = np.nan
 df.loc[df.sample(frac=0.041).index, 'cholesterol'] = np.nan
 df.loc[df.sample(frac=0.035).index, 'glucose'] = np.nan
 
-# Добавляем 4 дубликата
 df = pd.concat([df, df.iloc[:4]], ignore_index=True)
 
 numeric_cols = ['age', 'bmi', 'systolic_bp', 'diastolic_bp', 'cholesterol', 'glucose']
 categorical_cols = ['gender', 'smoking_status', 'physical_activity', 'disease_risk']
 
-# РИСУНОК 1. Гистограммы числовых признаков
 fig, axes = plt.subplots(2, 3, figsize=(15, 10))
 axes = axes.flatten()
 for i, col in enumerate(numeric_cols):
@@ -58,7 +48,6 @@ plt.tight_layout()
 plt.savefig('images/fig1_histograms.png', dpi=300, bbox_inches='tight')
 plt.show()
 
-# РИСУНОК 2. Столбчатые диаграммы категориальных признаков
 fig, axes = plt.subplots(2, 2, figsize=(12, 10))
 axes = axes.flatten()
 for i, col in enumerate(categorical_cols):
@@ -73,7 +62,6 @@ plt.tight_layout()
 plt.savefig('images/fig2_categorical.png', dpi=300, bbox_inches='tight')
 plt.show()
 
-# РИСУНОК 3. Scatterplot (Seaborn)
 plt.figure(figsize=(10, 6))
 sns.scatterplot(data=df, x='bmi', y='cholesterol', hue='disease_risk', 
                 palette='muted', alpha=0.7)
@@ -84,7 +72,6 @@ plt.legend(title='Риск заболевания')
 plt.savefig('images/fig3_scatter_bmi_chol.png', dpi=300, bbox_inches='tight')
 plt.show()
 
-# РИСУНОК 4. Boxplot по статусу курения (Seaborn)
 plt.figure(figsize=(10, 6))
 sns.boxplot(data=df, x='smoking_status', y='systolic_bp', palette='pastel')
 plt.title('Рисунок 4. Систолическое давление по статусу курения')
@@ -93,7 +80,6 @@ plt.ylabel('Систолическое давление (мм рт. ст.)')
 plt.savefig('images/fig4_boxplot_smoking_bp.png', dpi=300, bbox_inches='tight')
 plt.show()
 
-# РИСУНОК 5. Violinplot по целевой переменной (Seaborn)
 plt.figure(figsize=(10, 6))
 sns.violinplot(data=df, x='disease_risk', y='glucose', palette='muted')
 plt.title('Рисунок 5. Распределение глюкозы по классам риска')
@@ -102,7 +88,6 @@ plt.ylabel('Уровень глюкозы (мг/дл)')
 plt.savefig('images/fig5_violin_glucose.png', dpi=300, bbox_inches='tight')
 plt.show()
 
-# РИСУНОК 6. Интерактивная диаграмма рассеяния (Plotly)
 fig6 = px.scatter(df, x='age', y='systolic_bp', color='disease_risk',
                   title='Рисунок 6. Возраст и систолическое давление',
                   labels={'age': 'Возраст', 'systolic_bp': 'Систолическое давление', 
@@ -111,7 +96,6 @@ fig6 = px.scatter(df, x='age', y='systolic_bp', color='disease_risk',
 fig6.write_html('images/fig6_interactive_scatter.html')
 fig6.show()
 
-# РИСУНОК 7. Интерактивная гистограмма ИМТ по полу (Plotly)
 fig7 = px.histogram(df, x='bmi', color='gender', barmode='overlay',
                     title='Рисунок 7. Распределение ИМТ по полу',
                     labels={'bmi': 'Индекс массы тела (BMI)', 'gender': 'Пол'},
@@ -119,7 +103,6 @@ fig7 = px.histogram(df, x='bmi', color='gender', barmode='overlay',
 fig7.write_html('images/fig7_interactive_hist_bmi.html')
 fig7.show()
 
-# РИСУНОК 8. Тепловая карта корреляций (Seaborn)
 plt.figure(figsize=(10, 8))
 corr_matrix = df[numeric_cols].corr()
 sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', fmt=".2f", linewidths=0.5)
@@ -127,7 +110,6 @@ plt.title('Рисунок 8. Тепловая карта корреляций ч
 plt.savefig('images/fig8_heatmap_corr.png', dpi=300, bbox_inches='tight')
 plt.show()
 
-# РИСУНОК 9. Тепловая карта пропусков (Seaborn)
 plt.figure(figsize=(12, 6))
 sns.heatmap(df.isnull(), cbar=False, cmap='viridis')
 plt.title('Рисунок 9. Тепловая карта пропущенных значений')
@@ -136,7 +118,6 @@ plt.ylabel('Наблюдения')
 plt.savefig('images/fig9_heatmap_missing.png', dpi=300, bbox_inches='tight')
 plt.show()
 
-# РИСУНОК 10. Боксплоты всех числовых признаков (Seaborn)
 fig, axes = plt.subplots(2, 3, figsize=(15, 10))
 axes = axes.flatten()
 for i, col in enumerate(numeric_cols):
@@ -147,8 +128,7 @@ plt.suptitle('Рисунок 10. Боксплоты числовых призн�
 plt.tight_layout()
 plt.savefig('images/fig10_boxplots.png', dpi=300, bbox_inches='tight')
 plt.show()
-
-# РИСУНОК 11. Сравнение исходных и зашумлённых распределений
+й
 noise_systolic = np.random.normal(0, 3, size=len(df))
 df['systolic_bp_noisy'] = df['systolic_bp'] + noise_systolic
 noise_chol = np.random.normal(0, 5, size=len(df))
@@ -175,4 +155,4 @@ plt.tight_layout()
 plt.savefig('images/fig11_noisy_comparison.png', dpi=300, bbox_inches='tight')
 plt.show()
 
-print("\n✅ Все 11 графиков успешно сохранены в папку 'images/'!")
+print("\n Все 11 графиков успешно сохранены в папку 'images/'!")
