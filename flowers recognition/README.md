@@ -12,7 +12,7 @@
 - Тип задачи: Бинарная классификация изображений
 
 ## Структура репозитория
-data — исходные файлы (train.dat, test.dat)
-images — 5 визуализаций первичного анализа
-analysis.py — скрипт генерации графиков
-requirements.txt — Python
+data_text/ — исходные файлы (train.dat, test.dat)
+images_text/ — 5 визуализаций первичного анализа
+text_analysis.py — скрипт генерации графиков
+requirements.txt — зависимости Python
